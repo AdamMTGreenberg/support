@@ -13,11 +13,11 @@ type Router struct {
 
 type Handler func(*Client, interface{})
 
-func (e *Rounter) ServerHTTP(w http.ResponseWriter, r *http.Request) {
+func (e *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	socket, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Printt(w, err.Error())
+		fmt.Print(w, err.Error())
 		return
 	}
 	client := NewClient(socket, e.FindHandler)

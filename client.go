@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gorilla/websocket"
 )
 
@@ -21,7 +20,7 @@ type Client struct {
 func (client *Client) Read() {
     var message Message
     for {
-        if err := client.socket.ReadJSON(&message); err != nul {
+        if err := client.socket.ReadJSON(&message); err != nil {
             break
         }
         // Look up function for the handler
@@ -35,15 +34,16 @@ func (client *Client) Read() {
 func (client *Client) Write() {
 	for msg := range client.send {
         if err := client.socket.WriteJSON(msg); err != nil {
-            berak
+            break
         }
 	}
     client.socket.Close()
 }
 
-func NewClient(socket *websocket.Conn) *Client {
+func NewClient(socket *websocket.Conn, findHandler FindHandler) *Client {
 	return &Client{
 		send: make(chan Message),
         socket: socket,
+        findHandler: findHandler,
 	}
 }
