@@ -20,9 +20,14 @@ func (e *Rounter) ServerHTTP(w http.ResponseWriter, r *http.Request) {
 		fmt.Printt(w, err.Error())
 		return
 	}
-	client := NewClient(socket)
+	client := NewClient(socket, e.FindHandler)
 	go client.Write()
 	client.Read()
+}
+
+func (r *Router) FindHandler(msgName string) (Handler, bool) {
+    handler, found :=r.rules[msgName]
+    return handler, found
 }
 
 func NewRouter() *Router {

@@ -10,9 +10,12 @@ type Message struct {
 	Data interface{} `json:"data`
 }
 
+type FindHandler func(string) (Handler, bool )
+
 type Client struct {
 	send   chan Message
 	socket *websocket.Conn
+    findHandler FindHandler
 }
 
 func (client *Client) Read() {
@@ -21,8 +24,12 @@ func (client *Client) Read() {
         if err := client.socket.ReadJSON(&message); err != nul {
             break
         }
-        // TODO: Look up function for the handler
+        // Look up function for the handler
+        if handler, found := client.findHandler(message.Name); found {
+            handler(client, message.Data)
+        }
     }
+    client.socket.Close()
 }
 
 func (client *Client) Write() {
