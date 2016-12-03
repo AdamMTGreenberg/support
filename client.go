@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
+	"github.com/gorilla/websocket"
 )
 
 type Message struct {
@@ -12,45 +11,22 @@ type Message struct {
 }
 
 type Client struct {
-	send chan Message
+	send   chan Message
+	socket *websocket.Conn
 }
 
-func (client *Client) write() {
+func (client *Client) Write() {
 	for msg := range client.send {
-		// TODO: socket.sendJSON(msg)
-		fmt.Println("%#v\n", msg)
+        if err := client.socket.WriteJSON(msg); err != nil {
+            berak
+        }
 	}
+    client.socket.Close()
 }
 
-func (client *Client) subscribeChannels() {
-	// TODO: changefeed Query RethingDB
-	for {
-		time.Sleep(r())
-        client.send <- Message{"channel add", ""}
+func NewClient(socket *websocket.Conn) *Client {
+	return &Client{
+		send: make(chan Message),
+        socket: socket,
 	}
-}
-
-func (client *Client) subscribeMessages() {
-    // TODO: changefeed Query RethingDB
-    for {
-        time.Sleep(r())
-        client.send <- Message{"message add", ""}
-    }
-}
-
-func r() time.Duration {
-	return time.Millisecond * time.Duration(rand.Intn(1000))
-}
-
-func NewClient() *Client {
-    return &Client{
-        send: make(chan Message),
-    }
-}
-
-func main() {
-    client := NewClient()
-    go client.subscribeChannels()
-    go client.subscribeMessages()
-    client.write()
 }
