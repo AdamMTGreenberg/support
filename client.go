@@ -15,6 +15,16 @@ type Client struct {
 	socket *websocket.Conn
 }
 
+func (client *Client) Read() {
+    var message Message
+    for {
+        if err := client.socket.ReadJSON(&message); err != nul {
+            break
+        }
+        // TODO: Look up function for the handler
+    }
+}
+
 func (client *Client) Write() {
 	for msg := range client.send {
         if err := client.socket.WriteJSON(msg); err != nil {
